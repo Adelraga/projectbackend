@@ -19,6 +19,16 @@ module.exports = {
       Id_Image,
     } = workerBody;
 
+    // Check if req.files.profileImage and req.files.Id_Image exist before accessing their properties
+    const profileImageFilename =
+      req.files && req.files.profileImage && req.files.profileImage[0]
+        ? req.files.profileImage[0].filename
+        : "60111.jpg";
+    const idImageFilename =
+      req.files && req.files.Id_Image && req.files.Id_Image[0]
+        ? req.files.Id_Image[0].filename
+        : "60111.jpg";
+
     // Create a new Worker instance with default values if not provided in req.body
     const newWorker = new Worker({
       worker,
@@ -30,14 +40,8 @@ module.exports = {
       description,
       experience,
       totalOrders,
-      profileImage:
-        `https://projectbackend-1-74b9.onrender.com/uploads/${req.files.profileImage.filename}` ??
-        // ? `http://localhost:3000/uploads/${req.files["profileImage"][0].filename}`
-        "https://projectbackend-1-74b9.onrender.com/uploads/60111.jpg",
-      Id_Image:
-        `https://projectbackend-1-74b9.onrender.com/uploads/${req.files.Id_Image.filename}` ??
-        // ? `http://localhost:3000/uploads/${req.files["Id_Image"][0].filename}`
-        "http://localhost:3000/uploads/60111.jpg",
+      profileImage: `https://projectbackend-1-74b9.onrender.com/uploads/${profileImageFilename}`,
+      Id_Image: `https://projectbackend-1-74b9.onrender.com/uploads/${idImageFilename}`,
     });
 
     try {

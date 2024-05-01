@@ -2,9 +2,9 @@
   "name": "projectbackend",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch . server.js"
+    "server": "node server.js"
   },
   "keywords": [],
   "author": "",

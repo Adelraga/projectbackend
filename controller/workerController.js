@@ -31,13 +31,13 @@ module.exports = {
       experience,
       totalOrders,
       profileImage:
-        `https://projectbackend-1-74b9.onrender.com/uploads/${req.files.profileImage[0].filename}` ??
-        `https://projectbackend-1-74b9.onrender.com/uploads/${req.files["profileImage"][0].filename}`,
-      // "https://projectbackend-1-74b9.onrender.com/uploads/60111.jpg",
+        `https://projectbackend-1-74b9.onrender.com/uploads/${req.files.profileImage.filename}` ??
+        // ? `http://localhost:3000/uploads/${req.files["profileImage"][0].filename}`
+        "https://projectbackend-1-74b9.onrender.com/uploads/60111.jpg",
       Id_Image:
-        `https://projectbackend-1-74b9.onrender.com/uploads/${req.files.Id_Image[0].filename}` ??
-        `https://projectbackend-1-74b9.onrender.com/uploads/${req.files["Id_Image"][0].filename}`,
-      // "https://projectbackend-1-74b9.onrender.com/uploads/60111.jpg",
+        `https://projectbackend-1-74b9.onrender.com/uploads/${req.files.Id_Image.filename}` ??
+        // ? `http://localhost:3000/uploads/${req.files["Id_Image"][0].filename}`
+        "http://localhost:3000/uploads/60111.jpg",
     });
 
     try {

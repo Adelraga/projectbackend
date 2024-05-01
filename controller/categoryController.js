@@ -126,7 +126,7 @@ module.exports = {
       const updateCategory = new Category({
         title: existingCategory.title,
         value: existingCategory.value,
-        imageUrl: `http://localhost:3000/uploads/${existingCategory.imageUrl}`,
+        imageUrl: `https://projectbackend-1-74b9.onrender.com/uploads/${existingCategory.imageUrl}`,
       });
       await updateCategory.save();
       if (!updateCategory) {

@@ -49,7 +49,7 @@ const UserSchema = new Schema(
     profile: {
       type: String,
       require: true,
-      default: "http://localhost:3000/uploads/60111.jpg",
+      default: "https://projectbackend-1-74b9.onrender.com/uploads/60111.jpg",
     },
   },
   { timestamps: true }

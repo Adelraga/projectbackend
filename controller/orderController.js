@@ -184,7 +184,7 @@ module.exports = {
 
     try {
       const imageUrls = req.files.map(
-        (file) => `http://localhost:3000/uploads/${file.filename}`
+        (file) => `https://projectbackend-1-74b9.onrender.com/uploads/${file.filename}`
       );
 
       const order = await Order.findByIdAndUpdate(

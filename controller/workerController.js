@@ -1,63 +1,63 @@
 const Worker = require("../models/worker");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("../utils/cloudinary");
+
 
 module.exports = {
   registerWorker: async (req, res) => {
-    // create order
-    const workerBody = req.body;
-    const {
-      worker,
-      isAvailable,
-      rating,
-      reviews,
-      reviews_numbers,
-      specialization,
-      description,
-      experience,
-      totalOrders,
-      profileImage,
-      Id_Image,
-    } = workerBody;
-
-    // Check if req.files.profileImage and req.files.Id_Image exist before accessing their properties
-    const profileImageFilename =
-      req.files && req.files.profileImage && req.files.profileImage[0]
-        ? req.files.profileImage[0].filename
-        : "60111.jpg";
-    const idImageFilename =
-      req.files && req.files.Id_Image && req.files.Id_Image[0]
-        ? req.files.Id_Image[0].filename
-        : "60111.jpg";
-
-    // Create a new Worker instance with default values if not provided in req.body
-    const newWorker = new Worker({
-      worker,
-      isAvailable: isAvailable ?? true,
-      rating: rating ?? 5,
-      reviews: reviews ?? [],
-      reviews_numbers: reviews_numbers ?? 0,
-      specialization,
-      description,
-      experience,
-      totalOrders,
-      profileImage: `https://projectbackend-1-74b9.onrender.com/uploads/${profileImageFilename}`,
-      Id_Image: `https://projectbackend-1-74b9.onrender.com/uploads/${idImageFilename}`,
-    });
-
     try {
+      const workerBody = req.body;
+      const {
+        worker,
+        isAvailable,
+        rating,
+        reviews,
+        reviews_numbers,
+        specialization,
+        description,
+        experience,
+        totalOrders,
+      } = workerBody;
+
+      const profileImageFilename = req.files && req.files.profileImage ? req.files.profileImage[0].path : null;
+      const idImageFilename = req.files && req.files.Id_Image ? req.files.Id_Image[0].path : null;
+
+      if (!profileImageFilename || !idImageFilename) {
+        return res.status(400).json({ success: false, error: "Profile image and ID image are required" });
+      }
+
+      const profileImageResult = await cloudinary.uploader.upload(profileImageFilename);
+      const idImageResult = await cloudinary.uploader.upload(idImageFilename);
+
+      const newWorker = new Worker({
+        worker,
+        isAvailable: isAvailable ?? true,
+        rating: rating ?? 5,
+        reviews: reviews ?? [],
+        reviews_numbers: reviews_numbers ?? 0,
+        specialization,
+        description,
+        experience,
+        totalOrders,
+        profileImage: profileImageResult.secure_url,
+        Id_Image: idImageResult.secure_url,
+      });
+
       await newWorker.save();
-      res.status(201).json({
+      return res.status(201).json({
         success: true,
         message: "Worker Register Successfully",
         data: newWorker,
       });
     } catch (err) {
+      console.error(err);
       res.status(500).json({
         success: false,
         error: err.message,
       });
     }
   },
+
 
   setWorkerAvailability: async (req, res) => {
     try {
@@ -84,6 +84,30 @@ module.exports = {
         success: true,
         message: "Worker availability updated",
         data: worker,
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        error: err.message,
+      });
+    }
+  },
+
+  getAllWorkers: async (req, res) => {
+    try {
+      // Query all workers from the database
+      const workers = await Worker.find();
+
+      if (!workers || workers.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: "No workers found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: workers,
       });
     } catch (err) {
       res.status(500).json({

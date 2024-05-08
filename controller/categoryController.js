@@ -1,4 +1,5 @@
 const Category = require("../models/Category");
+const cloudinary = require("../utils/cloudinary");
 
 module.exports = {
   createCategory: async (req, res) => {
@@ -8,7 +9,14 @@ module.exports = {
       if (categor) {
         return res.status(400).json({ message: "Category already exist" });
       }
-      const category = new Category(categoryBody);
+      const result = await cloudinary.uploader.upload(req.file.path);
+      const category = new Category({
+        title: categoryBody.title ?? "notFound",
+        value: categoryBody.value ?? "notFound",
+        imageUrl:
+          result.secure_url
+          
+      });
       await category.save();
       return res
         .status(201)
@@ -123,10 +131,11 @@ module.exports = {
     const imageUrl = req.body;
     try {
       const existingCategory = await Category.findById(categoryId);
+      const result = await cloudinary.uploader.upload(req.file.path);
       const updateCategory = new Category({
         title: existingCategory.title,
         value: existingCategory.value,
-        imageUrl: `https://projectbackend-1-74b9.onrender.com/uploads/${existingCategory.imageUrl}`,
+        imageUrl: result.secure_url,
       });
       await updateCategory.save();
       if (!updateCategory) {

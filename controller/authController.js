@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
 const cloudinary = require("../utils/cloudinary");
 
-
 module.exports = {
   createUser: async (req, res) => {
     const user = req.body;
@@ -92,8 +91,8 @@ module.exports = {
             return res.status(200).json({
               status: "success",
               message: "Login Successfully ✅",
-              // ...others,
               token,
+              ...others,
             });
           }
         }

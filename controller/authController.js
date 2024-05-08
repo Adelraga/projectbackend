@@ -92,7 +92,7 @@ module.exports = {
             return res.status(200).json({
               status: "success",
               message: "Login Successfully ✅",
-              // ...others,
+              ...others,
               token,
             });
           }

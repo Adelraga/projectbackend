@@ -1,16 +1,69 @@
 const Order = require("../models/Order");
+const cloudinary = require("../utils/cloudinary");
 
 module.exports = {
   placeOrder: async (req, res) => {
-    // create order
-    const order = new Order(req.body);
+    const userId = req.cookies.user_id;
+
     try {
+      // Extract order data from request body
+      const {
+        workerId,
+        orderPrice,
+        address,
+        paymentMethod,
+        paymentStatus,
+        orderStatus,
+        rating,
+        feedBack,
+        orderImages: orderImagesFromBody, // Rename to avoid naming conflict
+      } = req.body;
+
+      // Extract order images from req.files and upload to Cloudinary
+      const uploadPromises = req.files.map((file) => cloudinary.uploader.upload(file.path));
+
+      // Await all Cloudinary upload promises
+      const cloudinaryResults = await Promise.all(uploadPromises);
+
+      // Extract URLs from Cloudinary results
+      const orderImages = cloudinaryResults.map((result) => result.secure_url);
+
+      let finalOrderImages = [];
+
+      // Concatenate both sets of order images if orderImagesFromBody is an array
+      if (Array.isArray(orderImagesFromBody)) {
+        finalOrderImages = orderImages.concat(
+          orderImagesFromBody.filter((image) => !orderImages.includes(image))
+        );
+      } else {
+        // If orderImagesFromBody is not an array or not present, use only req.files images
+        finalOrderImages = orderImages;
+      }
+
+      // Create new order instance
+      const order = new Order({
+        userId,
+        workerId,
+        orderPrice,
+        address,
+        paymentMethod,
+        paymentStatus,
+        orderStatus,
+        rating,
+        feedBack,
+        orderImages: finalOrderImages, // Use the concatenated order images
+      });
+
+      // Save the order
       await order.save();
+
+      // Send success response
       res.status(200).json({
         success: true,
         data: order,
       });
     } catch (err) {
+      // Send error response if there's any error
       res.status(400).json({
         success: false,
         error: err.message,
@@ -62,10 +115,10 @@ module.exports = {
         })
         .populate({
           path: "workerId",
-          populate: "name phone",
+          select: "name phone",
         });
-
-      if (!orders) {
+  
+      if (orders.length === 0) { // Check if orders array is empty
         return res.status(400).json({
           success: false,
           message: "No orders found for this user",
@@ -183,10 +236,15 @@ module.exports = {
     const orderId = req.params.orderId;
 
     try {
-      const imageUrls = req.files.map(
-        (file) => `https://projectbackend-1-74b9.onrender.com/uploads/${file.filename}`
-      );
+      const imageUrls = [];
 
+      // Upload each file to Cloudinary and collect the URLs
+      for (const file of req.files) {
+        const result = await cloudinary.uploader.upload(file.path);
+        imageUrls.push(result.secure_url);
+      }
+
+      // Update the order with the new image URLs
       const order = await Order.findByIdAndUpdate(
         orderId,
         {
@@ -214,4 +272,29 @@ module.exports = {
       });
     }
   },
+
+  getAllOrders: async (req, res) => {
+    try {
+      // Query all orders from the database
+      const orders = await Order.find();
+
+      if (!orders || orders.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: "No orders found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: orders,
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        error: err.message,
+      });
+    }
+  }
+
 };

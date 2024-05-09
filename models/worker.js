@@ -34,19 +34,19 @@ const workerSchema = new Schema(
 
     isAvailable: {
       type: Boolean,
-      required: true,
+
     },
     rating: {
       type: Number,
       min: 1,
       max: 5,
-      default: 5,
+      default:2,
     },
 
     reviews: [reviewSchema],
     reviews_numbers: {
       type: Number,
-      default: "",
+      
     },
 
     specialization: {
@@ -65,7 +65,6 @@ const workerSchema = new Schema(
     },
     totalOrders: {
       type: Number,
-      required: true,
       min: 0,
     },
     profileImage: {

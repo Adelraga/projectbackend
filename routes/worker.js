@@ -36,7 +36,7 @@ const allowedTo = require("../middlewares/allowedTo");
 // });
 
 const workerController = require("../controller/workerController");
-const upload = require("../middlewares/multer")
+const upload = require("../middlewares/multer");
 
 // get all users
 
@@ -56,15 +56,14 @@ router.patch(
   verifyToken,
   workerController.setWorkerAvailability
 );
-router.get(
-  "/getAllWorkers",
-  verifyToken,
-  workerController.getAllWorkers
-);
-router.get(
-  "/getWorkerDetails/:workerId",
-  verifyToken,
-  workerController.getWorkerDetails
-);
+router.get("/getAllWorkers", verifyToken, workerController.getAllWorkers);
+// router.get(
+//   "/getWorkerDetails/:workerId",
+//   verifyToken,
+//   workerController.getWorkerDetails
+// );
+
+router.patch("/:workerId", verifyToken, workerController.rateWorker);
+router.post("/:workerId", verifyToken, workerController.updateWorkerReviews);
 
 module.exports = router;

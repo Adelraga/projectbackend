@@ -43,12 +43,12 @@ const UserSchema = new Schema(
     userType: {
       type: String,
       require: true,
-      enum: ["Admin", "Worker", "Client"],
+      enum: ["Admin", "Worker", "Client","admain","worker","client"],
       default: "Client",
     },
     profile: {
       type: String,
-      require: true,
+      require: false,
       // default: "https://projectbackend-1-74b9.onrender.com/uploads/60111.jpg",
     },
   },

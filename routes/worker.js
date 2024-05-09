@@ -52,7 +52,7 @@ router.post(
   workerController.registerWorker
 );
 router.patch(
-  "/setWorkerAvailability",
+  "/setWorkerAvailability/:workerId",
   verifyToken,
   workerController.setWorkerAvailability
 );
@@ -60,6 +60,11 @@ router.get(
   "/getAllWorkers",
   verifyToken,
   workerController.getAllWorkers
+);
+router.get(
+  "/getWorkerDetails/:workerId",
+  verifyToken,
+  workerController.getWorkerDetails
 );
 
 module.exports = router;

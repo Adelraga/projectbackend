@@ -26,7 +26,11 @@ const workerSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    // orderItems: [orderItemsSchema],
+
+    orderItems:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+    },
 
     isAvailable: {
       type: Boolean,

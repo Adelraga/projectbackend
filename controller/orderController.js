@@ -73,49 +73,48 @@ module.exports = {
 
   getOrderDetails: async (req, res) => {
     const orderId = req.params.orderId;
-    try {
-      const order = await Order.findById(orderId)
-        .populate({
-          path: "userId",
-          select: "firstName secondName email Phone", // Corrected to match the User schema
-        })
-        .populate({
-          path: "workerId",
-          select:
-            " firstName secondName specialization description experience totalOrders ", // Adding fields you might want from the Worker
-          // if you also need the worker's names (assuming they have a User account as well), add a new path for that
-        });
+  try {
+    const order = await Order.findById(orderId)
+    .populate({
+      path: "userId",
+      select: "firstName email",
+    })
+    .populate({
+      path: "workerId",
+      select: "rating",
+    });
 
-      if (!order) {
-        return res.status(400).json({
-          success: false,
-          message: "No such order found",
-        });
-      } else {
-        res.status(200).json({
-          success: true,
-          data: order,
-        });
-      }
-    } catch (error) {
-      res.status(400).json({
+
+    if (!order) {
+      return res.status(404).json({
         success: false,
-        error: error.message,
+        message: "No such order found",
       });
     }
+
+    res.status(200).json({
+      success: true,
+      data: order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
   },
 
   getUserOrders: async (req, res) => {
-    const userId = req.userId;
+    const userId = req.cookies.user_id;
     try {
-      const orders = await Order.find({ userId })
+      const orders = await Order.find({userId})
         .populate({
           path: "userId",
-          select: "name email phone",
+          select: "firstName email",
         })
         .populate({
           path: "workerId",
-          select: "name phone",
+          select: "rating",
         });
   
       if (orders.length === 0) { // Check if orders array is empty

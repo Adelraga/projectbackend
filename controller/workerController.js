@@ -8,7 +8,6 @@ module.exports = {
     try {
       const workerBody = req.body;
       const {
-        worker,
         isAvailable,
         rating,
         reviews,
@@ -28,9 +27,9 @@ module.exports = {
 
       const profileImageResult = await cloudinary.uploader.upload(profileImageFilename);
       const idImageResult = await cloudinary.uploader.upload(idImageFilename);
+      
 
       const newWorker = new Worker({
-        worker,
         isAvailable: isAvailable ?? true,
         rating: rating ?? 5,
         reviews: reviews ?? [],
@@ -59,12 +58,14 @@ module.exports = {
   },
 
 
+
+
   setWorkerAvailability: async (req, res) => {
     try {
       // Check if the Authorization header is present in the request
 
       // Use the extracted user ID to find the worker
-      const workerId = req.worker;
+      const workerId = req.params.workerId;
       const worker = await Worker.findById(workerId);
 
       if (!worker) {
@@ -116,4 +117,41 @@ module.exports = {
       });
     }
   },
+
+  getWorkerDetails: async (req, res) => {
+    const workerId = req.params.workerId;
+    try {
+      const worker = await Worker.findById({workerId})
+        .populate({
+          path: "worker",
+          select: "firstName email",
+        })
+        .populate({
+          path: "orderItems",
+          select: "rating",
+        });
+  
+      if (worker.length === 0) { // Check if orders array is empty
+        return res.status(400).json({
+          success: false,
+          message: "No worker found ",
+        });
+      } else {
+        res.status(200).json({
+          success: true,
+          data: worker,
+        });
+      }
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  },
+
+
+
+
+
 };

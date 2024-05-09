@@ -20,7 +20,9 @@ module.exports = {
       } = req.body;
 
       // Extract order images from req.files and upload to Cloudinary
-      const uploadPromises = req.files.map((file) => cloudinary.uploader.upload(file.path));
+      const uploadPromises = req.files.map((file) =>
+        cloudinary.uploader.upload(file.path)
+      );
 
       // Await all Cloudinary upload promises
       const cloudinaryResults = await Promise.all(uploadPromises);
@@ -73,41 +75,8 @@ module.exports = {
 
   getOrderDetails: async (req, res) => {
     const orderId = req.params.orderId;
-  try {
-    const order = await Order.findById(orderId)
-    .populate({
-      path: "userId",
-      select: "firstName email",
-    })
-    .populate({
-      path: "workerId",
-      select: "rating",
-    });
-
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "No such order found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: order,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-  },
-
-  getUserOrders: async (req, res) => {
-    const userId = req.cookies.user_id;
     try {
-      const orders = await Order.find({userId})
+      const order = await Order.findById(orderId)
         .populate({
           path: "userId",
           select: "firstName email",
@@ -116,8 +85,41 @@ module.exports = {
           path: "workerId",
           select: "rating",
         });
-  
-      if (orders.length === 0) { // Check if orders array is empty
+
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: "No such order found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: order,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  },
+
+  getUserOrders: async (req, res) => {
+    const userId = req.cookies.user_id;
+    try {
+      const orders = await Order.find({ userId })
+        .populate({
+          path: "userId",
+          select: "firstName email",
+        })
+        .populate({
+          path: "workerId",
+          select: "rating",
+        });
+
+      if (orders.length === 0) {
+        // Check if orders array is empty
         return res.status(400).json({
           success: false,
           message: "No orders found for this user",
@@ -275,7 +277,15 @@ module.exports = {
   getAllOrders: async (req, res) => {
     try {
       // Query all orders from the database
-      const orders = await Order.find();
+      const orders = await Order.find()
+        .populate({
+          path: "userId",
+          select: "firstName email",
+        })
+        .populate({
+          path: "workerId",
+          select: "rating firstName",
+        });
 
       if (!orders || orders.length === 0) {
         return res.status(404).json({
@@ -294,6 +304,5 @@ module.exports = {
         error: err.message,
       });
     }
-  }
-
+  },
 };

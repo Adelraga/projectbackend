@@ -37,10 +37,10 @@ module.exports = {
     }
   },
 
-  loginUser: async (req, res) => {
+ loginUser: async (req, res) => {
     try {
       var body = req.body;
-      if (!body) {
+      if  (!body) {
         return res
           .status(403)
           .send({ auth: false, message: "Please Enter Your Informations !" });
@@ -81,7 +81,7 @@ module.exports = {
 
             res.cookie("session_id", "123456");
             res.cookie("user_id", user._id, {
-              // maxAge: 21 * 24 * 60 * 60 * 1000, // 21 days
+              maxAge: 21 * 24 * 60 * 60 * 1000, // 21 days
               // httpOnly: true, // Cookie accessible only by the server
               secure: true, // Cookie sent only over HTTPS
               sameSite: "None", // Cookie sent in cross-origin requests

@@ -48,7 +48,6 @@ router.post(
   "/registerWorker",
   //upload.single("profileImage"),
   upload.fields([{ name: "profileImage" }, { name: "Id_Image", maxCount: 8 }]),
-  verifyToken,
   workerController.registerWorker
 );
 router.patch(

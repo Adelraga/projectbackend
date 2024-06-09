@@ -51,7 +51,7 @@ router.post(
   imageController.createImage
 );
 router.delete(
-  "/deleteImage/:categoryId",
+  "/deleteImage/:imageId",
   upload.single("imageUrl"),
   imageController.deleteImage
 );

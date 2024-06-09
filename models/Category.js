@@ -15,7 +15,7 @@ const categorySchema = new Schema(
     imageUrl: {
       type: String,
       required: true,
-      default: "https://projectbackend-1-74b9.onrender.com/uploads/60111.jpg",
+      default: "https://res.cloudinary.com/dvmoqvter/image/upload/v1715170700/maemjvn361ga3cxiqjcr.jpg",
     },
   },
   { timestamps: true }

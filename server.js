@@ -16,6 +16,7 @@ const userRoute = require("./routes/users");
 const categoryRoute = require("./routes/category");
 const workerRoute = require("./routes/worker");
 const orderRoute = require("./routes/order");
+const imagesRoute = require("./routes/images");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // is used to configure the Express application to parse data from incoming HTML forms. This line is setting up middleware for parsing URL-encoded data, typically submitted through HTML forms using the application/x-www-form-urlencoded content type.
@@ -24,7 +25,7 @@ app.use(cookieParser());
 app.use(
   session({
     secret: "secret",
-    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, 
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 },
     resave: false,
     saveUninitialized: false,
     store: store,
@@ -48,5 +49,6 @@ app.use("/api/users", userRoute);
 app.use("/api/category", categoryRoute);
 app.use("/api/worker", workerRoute);
 app.use("/api/order", orderRoute);
+app.use("/api/Images", imagesRoute);
 
 app.listen(port, () => console.log(`Runing app listening on port ${port}!`));

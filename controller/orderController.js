@@ -1,12 +1,14 @@
 const Order = require("../models/Order");
+const Worker = require("../models/worker");
+const User = require('../models/User');
 const cloudinary = require("../utils/cloudinary");
+const mongoose = require("mongoose"); 
 
 module.exports = {
   placeOrder: async (req, res) => {
     const userId = req.cookies.user_id;
 
     try {
-      // Extract order data from request body
       const {
         workerId,
         orderPrice,
@@ -16,33 +18,34 @@ module.exports = {
         orderStatus,
         rating,
         feedBack,
-        orderImages: orderImagesFromBody, // Rename to avoid naming conflict
+        orderImages: orderImagesFromBody,
       } = req.body;
 
-      // Extract order images from req.files and upload to Cloudinary
-      const uploadPromises = req.files.map((file) =>
+      if (!mongoose.Types.ObjectId.isValid(workerId)) {
+        return res.status(400).json({ success: false, error: "Invalid worker ID format" });
+      }
+
+      const workerExists = await Worker.findById(workerId);
+      if (!workerExists) {
+        return res.status(404).json({ success: false, error: "Worker not found" });
+      }
+
+      const uploadPromises = req.files.map(file =>
         cloudinary.uploader.upload(file.path)
       );
 
-      // Await all Cloudinary upload promises
       const cloudinaryResults = await Promise.all(uploadPromises);
-
-      // Extract URLs from Cloudinary results
-      const orderImages = cloudinaryResults.map((result) => result.secure_url);
+      const orderImages = cloudinaryResults.map(result => result.secure_url);
 
       let finalOrderImages = [];
-
-      // Concatenate both sets of order images if orderImagesFromBody is an array
       if (Array.isArray(orderImagesFromBody)) {
         finalOrderImages = orderImages.concat(
-          orderImagesFromBody.filter((image) => !orderImages.includes(image))
+          orderImagesFromBody.filter(image => !orderImages.includes(image))
         );
       } else {
-        // If orderImagesFromBody is not an array or not present, use only req.files images
         finalOrderImages = orderImages;
       }
 
-      // Create new order instance
       const order = new Order({
         userId,
         workerId,
@@ -53,26 +56,23 @@ module.exports = {
         orderStatus,
         rating,
         feedBack,
-        orderImages: finalOrderImages, // Use the concatenated order images
+        orderImages: finalOrderImages,
       });
 
-      // Save the order
       await order.save();
 
-      // Send success response
       res.status(200).json({
         success: true,
         data: order,
       });
     } catch (err) {
-      // Send error response if there's any error
       res.status(400).json({
         success: false,
         error: err.message,
       });
     }
   },
-
+  
   getOrderDetails: async (req, res) => {
     const orderId = req.params.orderId;
     try {
@@ -104,6 +104,8 @@ module.exports = {
       });
     }
   },
+
+
 
   getUserOrders: async (req, res) => {
     const userId = req.cookies.user_id;
@@ -276,33 +278,36 @@ module.exports = {
 
   getAllOrders: async (req, res) => {
     try {
-      // Query all orders from the database
-      const orders = await Order.find()
-        .populate({
-          path: "userId",
-          select: "firstName email",
-        })
-        .populate({
-          path: "workerId",
-          select: "rating firstName",
-        });
+        // Query all orders from the database
+        const orders = await Order.find()
+            .populate({
+                path: "userId",
+                select: "firstName email",
+            })
+            .populate({
+              path: "workerId",
+              select: "rating firstName",
+              // Make population optional (returns null if no match)
+              options: { join: true } 
+            }); 
 
-      if (!orders || orders.length === 0) {
-        return res.status(404).json({
-          success: false,
-          error: "No orders found",
-        });
-      }
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: "No orders found",
+            });
+        }
 
-      res.status(200).json({
-        success: true,
-        data: orders,
-      });
+        res.status(200).json({
+            success: true,
+            data: orders,
+        });
     } catch (err) {
-      res.status(500).json({
-        success: false,
-        error: err.message,
-      });
+        res.status(500).json({
+            success: false,
+            error: err.message,
+        });
     }
-  },
+},
+
 };

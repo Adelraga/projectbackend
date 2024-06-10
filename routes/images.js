@@ -40,19 +40,17 @@ const Verify = require("../middlewares/validateCookie");
 const upload = require("../middlewares/multer");
 
 // get all users
-
 // register
-
 // login
 
 router.post(
   "/createImage",
-  upload.single("imageUrl"),
+  upload.fields([{ name: "profileImage" }, { name: "imageUrl", maxCount: 8 }]),
   imageController.createImage
 );
 router.delete(
   "/deleteImage/:imageId",
-  upload.single("imageUrl"),
+  upload.fields([{ name: "profileImage" }, { name: "imageUrl", maxCount: 8 }]),
   imageController.deleteImage
 );
 

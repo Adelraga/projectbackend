@@ -2,26 +2,49 @@ const Images = require("../models/Images");
 const cloudinary = require("../utils/cloudinary");
 
 module.exports = {
-  createImage: async (req, res) => {
-    const imge = req.body;
-    try {
-     
-      const result = await cloudinary.uploader.upload(req.file.path);
-      const image = new Images({
-        imageUrl: result.secure_url,
-      });
-      await image.save();
+   createImage : async (req, res) => {
+    const profileImageFilename =
+      req.files && req.files.profileImage
+        ? req.files.profileImage[0].path
+        : null;
+    const idImageFilename =
+      req.files && req.files.imageUrl ? req.files.imageUrl[0].path : null;
+  
+    if (!profileImageFilename || !idImageFilename) {
       return res
-        .status(201)
-        .json({ status: "Success", message: "image created Successfully",data:{image} });
-    } catch (err) {
+        .status(400)
+        .json({
+          success: false,
+          error: "Profile image and ID image are required",
+        });
+    }
+  
+    try {
+      const profileImageResult = await cloudinary.uploader.upload(profileImageFilename);
+      const idImageResult = await cloudinary.uploader.upload(idImageFilename);
+  
+      // Creating a new Image document
+      const newImage = new Images({
+        profileImage: profileImageResult.secure_url,
+        imageUrl: idImageResult.secure_url,
+      });
+  
+      await newImage.save();
+  
+      return res.status(201).json({
+        success: true,
+        message: "Images Uploaded Successfully",
+        data: newImage,
+      });
+    } catch (error) {
+      console.error("Error uploading images:", error);
       return res.status(500).json({
-        status: "Failed",
-        message: "an error occured while creating the image",
-        error: err.message,
+        success: false,
+        error: "Internal Server Error",
       });
     }
   },
+
   deleteImage: async (req, res) => {
     const imageId = req.params.imageId;
     try {

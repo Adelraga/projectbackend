@@ -2,6 +2,7 @@ const Worker = require("../models/worker");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("../utils/cloudinary");
 const User = require("../models/User");
+const CryptoJS = require("crypto-js"); // Ensure you have required CryptoJS at the top
 
 module.exports = {
   registerWorker: async (req, res) => {
@@ -24,14 +25,14 @@ module.exports = {
         Phone,
         gender,
       } = workerBody;
-
+  
       const profileImageFilename =
         req.files && req.files.profileImage
           ? req.files.profileImage[0].path
           : null;
       const idImageFilename =
         req.files && req.files.Id_Image ? req.files.Id_Image[0].path : null;
-
+  
       if (!profileImageFilename || !idImageFilename) {
         return res
           .status(400)
@@ -40,25 +41,31 @@ module.exports = {
             error: "Profile image and ID image are required",
           });
       }
-
+  
       const profileImageResult = await cloudinary.uploader.upload(
         profileImageFilename
       );
       const idImageResult = await cloudinary.uploader.upload(idImageFilename);
-
+  
+      // Encrypt the password before saving
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        password,
+        process.env.SECRET
+      ).toString();
+  
       // Creating a new User
       const newUser = new User({
         firstName,
         secondName,
         email,
-        password,
+        password: encryptedPassword,
         address,
         Phone,
         gender,
         userType: "worker",
       });
       await newUser.save();
-
+  
       // Creating a new Worker linked to the User
       const newWorker = new Worker({
         worker: newUser._id,
@@ -74,9 +81,9 @@ module.exports = {
         profileImage: profileImageResult.secure_url,
         Id_Image: idImageResult.secure_url,
       });
-
+  
       await newWorker.save();
-
+  
       return res.status(201).json({
         success: true,
         message: "Worker Registered Successfully",

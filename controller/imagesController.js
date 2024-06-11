@@ -10,15 +10,6 @@ module.exports = {
     const idImageFilename =
       req.files && req.files.imageUrl ? req.files.imageUrl[0].path : null;
   
-    if (!profileImageFilename || !idImageFilename) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "Profile image and ID image are required",
-        });
-    }
-  
     try {
       const profileImageResult = await cloudinary.uploader.upload(profileImageFilename);
       const idImageResult = await cloudinary.uploader.upload(idImageFilename);

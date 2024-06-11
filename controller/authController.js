@@ -37,10 +37,10 @@ module.exports = {
     }
   },
 
- loginUser: async (req, res) => {
+  loginUser: async (req, res) => {
     try {
       var body = req.body;
-      if  (!body) {
+      if (!body) {
         return res
           .status(403)
           .send({ auth: false, message: "Please Enter Your Informations !" });
@@ -66,8 +66,6 @@ module.exports = {
             });
           } else {
             let options = {
-              // maxAge: 20 * 60 * 1000, // would expire in 20minutes
-              // httpOnly: true, // The cookie is only accessible by the web server
               secure: true,
               sameSite: "None",
             };
@@ -78,15 +76,14 @@ module.exports = {
                 expiresIn: "21d",
               }
             );
-
+  
             res.cookie("session_id", "123456");
             res.cookie("user_id", user._id, {
               maxAge: 21 * 24 * 60 * 60 * 1000, // 21 days
-              // httpOnly: true, // Cookie accessible only by the server
               secure: true, // Cookie sent only over HTTPS
               sameSite: "None", // Cookie sent in cross-origin requests
             });
-
+  
             const { password, email, ...others } = user._doc;
             return res.status(200).json({
               status: "success",

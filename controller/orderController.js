@@ -16,6 +16,7 @@ module.exports = {
         paymentStatus,
         orderStatus,
         rating,
+        description,
         feedBack,
         orderImages: orderImagesFromBody,
       } = req.body;
@@ -54,6 +55,7 @@ module.exports = {
         paymentStatus,
         orderStatus,
         rating,
+        description,
         feedBack,
         orderImages: finalOrderImages,
       });
@@ -78,14 +80,14 @@ module.exports = {
       const order = await Order.findById(orderId)
         .populate({
           path: "userId",
-          select: "firstName email",
+          select: "firstName secondName profile email",
         })
         .populate({
           path: "workerId",
           select: "profileImage rating",
           populate: {
               path: "worker",  // Change worker to user
-              select: "email firstName",
+              select: "email firstName secondName",
           }
       });
 
@@ -115,14 +117,14 @@ module.exports = {
       const orders = await Order.find({ userId })
         .populate({
           path: "userId",
-          select: "firstName email",
+          select: "firstName secondName profile email",
         })
         .populate({
           path: "workerId",
           select: "profileImage rating",
           populate: {
               path: "worker",  // Change worker to user
-              select: "email firstName",
+              select: "email firstName secondName",
           }
       });
 
@@ -288,14 +290,14 @@ module.exports = {
         const orders = await Order.find()
             .populate({
                 path: "userId",
-                select: "firstName email",
+                select: "firstName secondName profile email",
             })
             .populate({
               path: "workerId",
               select: "profileImage rating",
               populate: {
                   path: "worker",  // Change worker to user
-                  select: "email firstName",
+                  select: "email firstName secondName",
               }
           });
 
@@ -317,5 +319,4 @@ module.exports = {
         });
     }
 },
-
 };

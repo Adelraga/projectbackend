@@ -136,7 +136,7 @@ module.exports = {
       // Query all workers from the database
       const workers = await Worker.find().populate({
         path: "worker",
-        select: "firstName email",
+        select: "firstName secondName email ",
       });
 
       if (!workers || workers.length === 0) {

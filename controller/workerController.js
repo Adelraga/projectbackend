@@ -65,7 +65,7 @@ module.exports = {
       });
       await newUser.save();
 
-      // Creating a new Worker linked to the User
+      // Creating a new Worker linked to the User model 
       const newWorker = new Worker({
         worker: newUser._id,
         orderItems: null, // Set orderItems as per your requirement

@@ -1,6 +1,5 @@
 const Order = require("../models/Order");
 const Worker = require("../models/worker");
-const User = require('../models/User');
 const cloudinary = require("../utils/cloudinary");
 const mongoose = require("mongoose"); 
 
@@ -83,8 +82,12 @@ module.exports = {
         })
         .populate({
           path: "workerId",
-          select: "rating",
-        });
+          select: "profileImage rating",
+          populate: {
+              path: "worker",  // Change worker to user
+              select: "email firstName",
+          }
+      });
 
       if (!order) {
         return res.status(404).json({
@@ -103,8 +106,7 @@ module.exports = {
         error: error.message,
       });
     }
-  },
-
+},
 
 
   getUserOrders: async (req, res) => {
@@ -117,8 +119,12 @@ module.exports = {
         })
         .populate({
           path: "workerId",
-          select: "rating",
-        });
+          select: "profileImage rating",
+          populate: {
+              path: "worker",  // Change worker to user
+              select: "email firstName",
+          }
+      });
 
       if (orders.length === 0) {
         // Check if orders array is empty
@@ -286,10 +292,12 @@ module.exports = {
             })
             .populate({
               path: "workerId",
-              select: "rating firstName",
-              // Make population optional (returns null if no match)
-              options: { join: true } 
-            }); 
+              select: "profileImage rating",
+              populate: {
+                  path: "worker",  // Change worker to user
+                  select: "email firstName",
+              }
+          });
 
         if (!orders || orders.length === 0) {
             return res.status(404).json({

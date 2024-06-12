@@ -25,34 +25,32 @@ module.exports = {
         Phone,
         gender,
       } = workerBody;
-  
+
       const profileImageFilename =
         req.files && req.files.profileImage
           ? req.files.profileImage[0].path
           : null;
       const idImageFilename =
         req.files && req.files.Id_Image ? req.files.Id_Image[0].path : null;
-  
+
       if (!profileImageFilename || !idImageFilename) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            error: "Profile image and ID image are required",
-          });
+        return res.status(400).json({
+          success: false,
+          error: "Profile image and ID image are required",
+        });
       }
-  
+
       const profileImageResult = await cloudinary.uploader.upload(
         profileImageFilename
       );
       const idImageResult = await cloudinary.uploader.upload(idImageFilename);
-  
+
       // Encrypt the password before saving
       const encryptedPassword = CryptoJS.AES.encrypt(
         password,
         process.env.SECRET
       ).toString();
-  
+
       // Creating a new User
       const newUser = new User({
         firstName,
@@ -62,11 +60,12 @@ module.exports = {
         address,
         Phone,
         gender,
+        profile: profileImageResult.secure_url,
         userType: "worker",
       });
       await newUser.save();
-  
-      // Creating a new Worker linked to the User
+
+      // Creating a new Worker linked to the User model 
       const newWorker = new Worker({
         worker: newUser._id,
         orderItems: null, // Set orderItems as per your requirement
@@ -81,9 +80,9 @@ module.exports = {
         profileImage: profileImageResult.secure_url,
         Id_Image: idImageResult.secure_url,
       });
-  
+
       await newWorker.save();
-  
+
       return res.status(201).json({
         success: true,
         message: "Worker Registered Successfully",
@@ -228,43 +227,41 @@ module.exports = {
     const userId = req.cookies.user_id;
 
     try {
-        // Find the worker by ID
-        const worker = await Worker.findById(workerId);
-        if (!worker) {
-            return res.status(400).json({
-                success: false,
-                message: "Worker not found",
-            });
-        }
-
-        // Set the reviewer ID for each review
-        const updatedReviews = reviews.map(review => ({
-            ...review,
-            reviewer: userId
-        }));
-
-        // Append new reviews to existing ones
-        worker.reviews = worker.reviews.concat(updatedReviews);
-
-        // Update reviews_numbers with the new count of reviews
-        worker.reviews_numbers = worker.reviews.length;
-
-        // Save the updated worker
-        const updatedWorker = await worker.save();
-
-        // Respond with success message and updated data
-        res.status(200).json({
-            success: true,
-            message: "Reviews Updated Successfully",
-            data: updatedWorker,
+      // Find the worker by ID
+      const worker = await Worker.findById(workerId);
+      if (!worker) {
+        return res.status(400).json({
+          success: false,
+          message: "Worker not found",
         });
+      }
+
+      // Set the reviewer ID for each review
+      const updatedReviews = reviews.map((review) => ({
+        ...review,
+        reviewer: userId,
+      }));
+
+      // Append new reviews to existing ones
+      worker.reviews = worker.reviews.concat(updatedReviews);
+
+      // Update reviews_numbers with the new count of reviews
+      worker.reviews_numbers = worker.reviews.length;
+
+      // Save the updated worker
+      const updatedWorker = await worker.save();
+
+      // Respond with success message and updated data
+      res.status(200).json({
+        success: true,
+        message: "Reviews Updated Successfully",
+        data: updatedWorker,
+      });
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message,
-        });
+      res.status(400).json({
+        success: false,
+        error: error.message,
+      });
     }
-}
-
-
+  },
 };

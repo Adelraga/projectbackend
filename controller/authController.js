@@ -14,9 +14,9 @@ module.exports = {
       } else {
         // const result = await cloudinary.uploader.upload(req.file.path);
         const newUser = new User({
-          firstName: user.firstName ?? "anonymous",
-          secondName: user.secondName ?? "anonymous",
-          email: user.email,
+          firstName: user.firstName ,
+          secondName: user.secondName ,
+          email: user.email ?? "",
           // profile: result.secure_url,
           profile: user.profile,
           password: CryptoJS.AES.encrypt(

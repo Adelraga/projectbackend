@@ -5,13 +5,15 @@ const UserSchema = new Schema(
   {
     firstName: {
       type: String,
-      required: true,
-      unique: true,
+      default:"anonymous",
+      
+      required: false,
     },
     secondName: {
       type: String,
-      required: true,
-      unique: true,
+      default:"anonymous",
+
+      required: false,
     },
     // orders: {
     //   type: mongoose.Schema.Types.ObjectId,
@@ -19,8 +21,7 @@ const UserSchema = new Schema(
     // },
     email: {
       type: String,
-      required: true,
-      unique: true,
+      required: false,
     },
     password: {
       type: String,

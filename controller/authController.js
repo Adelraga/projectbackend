@@ -12,12 +12,12 @@ module.exports = {
       if (oldUser) {
         return res.status(400).json({ message: "Email already exist" });
       } else {
-        const result = await cloudinary.uploader.upload(req.file.path);
+        // const result = await cloudinary.uploader.upload(req.file.path);
         const newUser = new User({
           firstName: user.firstName ?? "anonymous",
           secondName: user.secondName ?? "anonymous",
           email: user.email,
-          profile: result.secure_url,
+          // profile: result.secure_url,
           password: CryptoJS.AES.encrypt(
             user.password,
             process.env.SECRET

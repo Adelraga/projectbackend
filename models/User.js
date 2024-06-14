@@ -46,11 +46,11 @@ const UserSchema = new Schema(
       enum: ["Admin", "Worker", "Client","admain","worker","client"],
       default: "Client",
     },
-    profile: {
-      type: String,
-      require: false,
-      // default: "https://projectbackend-1-74b9.onrender.com/uploads/60111.jpg",
-    },
+    // profile: {
+    //   type: String,
+    //   require: false,
+    //   // default: "https://projectbackend-1-74b9.onrender.com/uploads/60111.jpg",
+    // },
   },
   { timestamps: true }
 );

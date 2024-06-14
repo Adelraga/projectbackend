@@ -49,8 +49,9 @@ const upload = require("../middlewares/multer")
 // register
 
 // login
+// upload.single("profile"),
 
-router.post("/register", upload.single("profile"), usersController.createUser);
+router.post("/register",  usersController.createUser);
 router.post("/login", usersController.loginUser);
 router.post("/Logout", usersController.Logout);
 

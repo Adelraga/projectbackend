@@ -34,6 +34,7 @@ const UserSchema = new Schema(
       type: String,
       require: false,
     },
+    
     gender: {
       type: String,
       require: true,

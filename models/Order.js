@@ -40,8 +40,8 @@ const orderSchema = new Schema(
       enum: ["Pending", "Completed", "Cancelled"],
     },
     orderDate: {
-      type: Date,
-      default: Date.now,
+      type: String,
+      default: "",
     },
     rating: {
       type: Number,

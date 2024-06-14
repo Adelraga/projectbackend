@@ -17,6 +17,7 @@ module.exports = {
         orderStatus,
         rating,
         description,
+        orderDate,
         feedBack,
         orderImages: orderImagesFromBody,
       } = req.body;
@@ -56,6 +57,7 @@ module.exports = {
         orderStatus,
         rating,
         description,
+        orderDate,
         feedBack,
         orderImages: finalOrderImages,
       });

@@ -18,6 +18,7 @@ module.exports = {
           secondName: user.secondName ?? "anonymous",
           email: user.email,
           // profile: result.secure_url,
+          profile: user.profile,
           password: CryptoJS.AES.encrypt(
             user.password,
             process.env.SECRET

@@ -2,39 +2,46 @@ const Images = require("../models/Images");
 const cloudinary = require("../utils/cloudinary");
 
 module.exports = {
-   createImage : async (req, res) => {
+  createImage: async (req, res) => {
     const profileImageFilename =
-      req.files && req.files.profileImage
-        ? req.files.profileImage[0].path
-        : null;
+        req.files && req.files.profileImage ? req.files.profileImage[0].path : null;
     const idImageFilename =
-      req.files && req.files.imageUrl ? req.files.imageUrl[0].path : null;
-  
+        req.files && req.files.imageUrl ? req.files.imageUrl[0].path : null;
+
     try {
-      const profileImageResult = await cloudinary.uploader.upload(profileImageFilename);
-      const idImageResult = await cloudinary.uploader.upload(idImageFilename);
-  
-      // Creating a new Image document
-      const newImage = new Images({
-        profileImage: profileImageResult.secure_url,
-        imageUrl: idImageResult.secure_url,
-      });
-  
-      await newImage.save();
-  
-      return res.status(201).json({
-        success: true,
-        message: "Images Uploaded Successfully",
-        data: newImage,
-      });
+        let profileImageResult = { secure_url: "https://res.cloudinary.com/dvmoqvter/image/upload/v1715170700/maemjvn361ga3cxiqjcr.jpg" };
+        let idImageResult = { secure_url: "https://res.cloudinary.com/dvmoqvter/image/upload/v1715170700/maemjvn361ga3cxiqjcr.jpg" };
+
+        if (profileImageFilename) {
+            profileImageResult = await cloudinary.uploader.upload(profileImageFilename);
+        }
+
+        if (idImageFilename) {
+            idImageResult = await cloudinary.uploader.upload(idImageFilename);
+        }
+
+        // Creating a new Image document
+        const newImage = new Images({
+            profileImage: profileImageResult.secure_url,
+            imageUrl: idImageResult.secure_url,
+        });
+
+        await newImage.save();
+
+        return res.status(201).json({
+            success: true,
+            message: "Images Uploaded Successfully",
+            data: newImage,
+        });
     } catch (error) {
-      console.error("Error uploading images:", error);
-      return res.status(500).json({
-        success: false,
-        error: "Internal Server Error",
-      });
+        console.error("Error uploading images:", error);
+        return res.status(500).json({
+            success: false,
+            error: "Internal Server Error",
+        });
     }
-  },
+},
+
 
   deleteImage: async (req, res) => {
     const imageId = req.params.imageId;

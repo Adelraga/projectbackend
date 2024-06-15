@@ -19,7 +19,7 @@ module.exports = {
         description,
         orderDate,
         feedBack,
-        orderImages: orderImagesFromBody,
+        orderImages,
       } = req.body;
 
       if (!mongoose.Types.ObjectId.isValid(workerId)) {
@@ -31,21 +31,21 @@ module.exports = {
         return res.status(404).json({ success: false, error: "Worker not found" });
       }
 
-      const uploadPromises = req.files.map(file =>
-        cloudinary.uploader.upload(file.path)
-      );
+      // const uploadPromises = req.files.map(file =>
+      //   cloudinary.uploader.upload(file.path)
+      // );
 
-      const cloudinaryResults = await Promise.all(uploadPromises);
-      const orderImages = cloudinaryResults.map(result => result.secure_url);
+      // const cloudinaryResults = await Promise.all(uploadPromises);
+      // const orderImages = cloudinaryResults.map(result => result.secure_url);
 
-      let finalOrderImages = [];
-      if (Array.isArray(orderImagesFromBody)) {
-        finalOrderImages = orderImages.concat(
-          orderImagesFromBody.filter(image => !orderImages.includes(image))
-        );
-      } else {
-        finalOrderImages = orderImages;
-      }
+      // let finalOrderImages = [];
+      // if (Array.isArray(orderImagesFromBody)) {
+      //   finalOrderImages = orderImages.concat(
+      //     orderImagesFromBody.filter(image => !orderImages.includes(image))
+      //   );
+      // } else {
+      //   finalOrderImages = orderImages;
+      // }
 
       const order = new Order({
         userId,
@@ -59,7 +59,7 @@ module.exports = {
         description,
         orderDate,
         feedBack,
-        orderImages: finalOrderImages,
+        orderImages,
       });
 
       await order.save();

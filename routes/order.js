@@ -49,10 +49,9 @@ const upload = require("../middlewares/multer")
 //   upload.single("profile"),
 //   orderController.placeOrder
 // );
+// upload.array("orderImages", 12),
 
-router.post("/placeOrder", verifyToken,
-upload.array("orderImages", 12),
-orderController.placeOrder);
+router.post("/placeOrder", verifyToken,orderController.placeOrder);
 
 router.post("/:orderId", verifyToken, orderController.getOrderDetails);
 router.get("/getUserOrders", verifyToken, orderController.getUserOrders);

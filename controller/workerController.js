@@ -23,34 +23,14 @@ module.exports = {
         password,
         address,
         Phone,
+        profileImage,
+        Id_Image,
         gender,
       } = workerBody;
-
-      const profileImageFilename =
-        req.files && req.files.profileImage
-          ? req.files.profileImage[0].path
-          : null;
-      const idImageFilename =
-        req.files && req.files.Id_Image ? req.files.Id_Image[0].path : null;
-
-      if (!profileImageFilename || !idImageFilename) {
-        return res.status(400).json({
-          success: false,
-          error: "Profile image and ID image are required",
-        });
-      }
-
-      const profileImageResult = await cloudinary.uploader.upload(
-        profileImageFilename
-      );
-      const idImageResult = await cloudinary.uploader.upload(idImageFilename);
-
+  
       // Encrypt the password before saving
-      const encryptedPassword = CryptoJS.AES.encrypt(
-        password,
-        process.env.SECRET
-      ).toString();
-
+      const encryptedPassword = CryptoJS.AES.encrypt(password, process.env.SECRET).toString();
+  
       // Creating a new User
       const newUser = new User({
         firstName,
@@ -60,12 +40,12 @@ module.exports = {
         address,
         Phone,
         gender,
-        profile: profileImageResult.secure_url,
+        profile: profileImage,
         userType: "worker",
       });
       await newUser.save();
-
-      // Creating a new Worker linked to the User model 
+  
+      // Creating a new Worker linked to the User model
       const newWorker = new Worker({
         worker: newUser._id,
         orderItems: null, // Set orderItems as per your requirement
@@ -77,16 +57,25 @@ module.exports = {
         description,
         experience,
         totalOrders,
-        profileImage: profileImageResult.secure_url,
-        Id_Image: idImageResult.secure_url,
+        Id_Image,
+        profileImage,
       });
-
+  
       await newWorker.save();
-
+  
+      // Populate the worker details
+      const populatedWorker = await Worker.findById(newWorker._id).populate('worker', 'firstName secondName email');
+  
       return res.status(201).json({
         success: true,
         message: "Worker Registered Successfully",
-        data: newWorker,
+        data: {
+          workerId: newWorker._id,
+          firstName: populatedWorker.worker.firstName,
+          secondName: populatedWorker.worker.secondName,
+          email: populatedWorker.worker.email,
+          ...newWorker.toObject()
+        },
       });
     } catch (err) {
       console.error(err);
@@ -96,6 +85,8 @@ module.exports = {
       });
     }
   },
+  
+  
 
   setWorkerAvailability: async (req, res) => {
     try {

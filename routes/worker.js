@@ -43,11 +43,12 @@ const upload = require("../middlewares/multer");
 // register
 
 // login
+// upload.fields([{ name: "profileImage" }, { name: "Id_Image", maxCount: 8 }]),
 
 router.post(
   "/registerWorker",
   //upload.single("profileImage"),
-  upload.fields([{ name: "profileImage" }, { name: "Id_Image", maxCount: 8 }]),
+ 
   workerController.registerWorker
 );
 router.patch(

@@ -9,8 +9,8 @@ module.exports = {
         req.files && req.files.imageUrl ? req.files.imageUrl[0].path : null;
 
     try {
-        let profileImageResult = { secure_url: "https://res.cloudinary.com/dvmoqvter/image/upload/v1715170700/maemjvn361ga3cxiqjcr.jpg" };
-        let idImageResult = { secure_url: "https://res.cloudinary.com/dvmoqvter/image/upload/v1715170700/maemjvn361ga3cxiqjcr.jpg" };
+        // let profileImageResult = { secure_url: "https://res.cloudinary.com/dvmoqvter/image/upload/v1715170700/maemjvn361ga3cxiqjcr.jpg" };
+        // let idImageResult = { secure_url: "https://res.cloudinary.com/dvmoqvter/image/upload/v1715170700/maemjvn361ga3cxiqjcr.jpg" };
 
         if (profileImageFilename) {
             profileImageResult = await cloudinary.uploader.upload(profileImageFilename);

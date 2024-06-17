@@ -5,8 +5,8 @@ const imagesSchema = new Schema(
   {
     imageUrl: {
       type: String,
-      default:
-        "https://res.cloudinary.com/dvmoqvter/image/upload/v1715170700/maemjvn361ga3cxiqjcr.jpg",
+      required: true,
+
     },
     profileImage: {
       type: String,
